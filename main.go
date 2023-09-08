@@ -68,7 +68,7 @@ func GetSlack(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/home", GetSlack)
+	http.HandleFunc("/api", GetSlack)
 	fmt.Printf("startng server at 3000\n")
 	if err := http.ListenAndServe(":3000", nil); err != nil {
 		log.Fatal(err)
