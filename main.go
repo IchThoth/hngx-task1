@@ -9,13 +9,13 @@ import (
 )
 
 type User struct {
-	SlackName   string    `json:"slack_name"`
-	CurrentDay  string    `json:"current_day"`
-	CurrentTime time.Time `json:"utc_time"`
-	Track       string    `json:"track"`
-	GitFileUrl  string    `json:"github_file_url"`
-	GitRepoUrl  string    `json:"github_repo_url"`
-	StatusCode  int       `json:"status_code"`
+	SlackName   string `json:"slack_name"`
+	CurrentDay  string `json:"current_day"`
+	CurrentTime string `json:"utc_time"`
+	Track       string `json:"track"`
+	GitFileUrl  string `json:"github_file_url"`
+	GitRepoUrl  string `json:"github_repo_url"`
+	StatusCode  int    `json:"status_code"`
 }
 
 func GetSlack(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +35,7 @@ func GetSlack(w http.ResponseWriter, r *http.Request) {
 	response := &User{
 		SlackName:   name,
 		CurrentDay:  time.Now().Weekday().String(),
-		CurrentTime: time.Now().UTC(),
+		CurrentTime: time.Now().UTC().Format("2006-01-02T15:04:05Z"),
 		Track:       track,
 		GitFileUrl:  "http://github.com/ichthoth/hngx-task1/blob/master/main.go",
 		GitRepoUrl:  "http://github.com/ichthoth/hngx-task1",
@@ -48,7 +48,6 @@ func GetSlack(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
 	w.Write(jsonResponse)
 }
 
