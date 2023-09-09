@@ -18,28 +18,23 @@ type User struct {
 	StatusCode  int       `json:"status_code"`
 }
 
-/*func populatejson() error {
-	user := &User{
-		SlackName:   "ichthoth",
-		CurrentDay:  time.Now().Day(),
-		CurrentTime: time.Now().Local(),
-		Track:       "backend",
-		GitFileUrl:  "http://github.com/ichthoth/",
-		GitRepoUrl:  "",
-		StatusCode:  http.StatusOK,
-	}
-
-	_, err := json.Marshal(user)
-	if err != nil {
-		fmt.Println(err)
-	}
-	return err
-}*/
-
 func GetSlack(w http.ResponseWriter, r *http.Request) {
-	user := &User{
+	if r.Method != "GET" {
+		http.Error(w, "NON-GET REQUEST", http.StatusBadRequest)
+	}
+
+	query := r.URL.Query()
+
+	name := query.Get("slack_name")
+	track := query.Get("track")
+
+	if name == "" || track == "" {
+		http.Error(w, "cannot get query params", http.StatusBadRequest)
+	}
+
+	response := &User{
 		SlackName:   "ichthoth",
-		CurrentDay:  "Friday",
+		CurrentDay:  time.Now().Weekday().String(),
 		CurrentTime: time.Now().UTC(),
 		Track:       "backend",
 		GitFileUrl:  "http://github.com/ichthoth/hngx-task1/blob/master/main.go",
@@ -47,29 +42,21 @@ func GetSlack(w http.ResponseWriter, r *http.Request) {
 		StatusCode:  http.StatusOK,
 	}
 
-	u, err := json.Marshal(user)
+	jsonResponse, err := json.Marshal(response)
 	if err != nil {
-		fmt.Println(err)
+		http.Error(w, "couldnt parse json response", http.StatusInternalServerError)
 	}
-
-	if r.Method != http.MethodGet {
-		http.Error(w, "non get request", http.StatusNotFound)
-	}
-
-	name := r.URL.Query().Get("slack_name")
-	track := r.URL.Query().Get("track")
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	w.Write(jsonResponse)
+	fmt.Fprintf(w, "%s/n", jsonResponse)
 
-	fmt.Fprintf(w, "%s\n", u)
-	fmt.Fprintf(w, "slack_name:%s\n", name)
-	fmt.Fprintf(w, "track:%s\n", track)
 }
 
 func main() {
 	http.HandleFunc("/api", GetSlack)
-	fmt.Printf("startng server at 3000\n")
+	fmt.Printf("starting server at 3000\n")
 	if err := http.ListenAndServe(":3000", nil); err != nil {
 		log.Fatal(err)
 	}
