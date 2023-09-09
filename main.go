@@ -29,14 +29,14 @@ func GetSlack(w http.ResponseWriter, r *http.Request) {
 	track := query.Get("track")
 
 	if name == "" || track == "" {
-		http.Error(w, "cannot get query params", http.StatusBadRequest)
+		http.Error(w, "cannot get slack name and track", http.StatusBadRequest)
 	}
 
 	response := &User{
-		SlackName:   "ichthoth",
+		SlackName:   name,
 		CurrentDay:  time.Now().Weekday().String(),
 		CurrentTime: time.Now().UTC(),
-		Track:       "backend",
+		Track:       track,
 		GitFileUrl:  "http://github.com/ichthoth/hngx-task1/blob/master/main.go",
 		GitRepoUrl:  "http://github.com/ichthoth/hngx-task1",
 		StatusCode:  http.StatusOK,
